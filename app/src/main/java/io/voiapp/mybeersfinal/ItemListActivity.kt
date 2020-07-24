@@ -21,6 +21,9 @@ import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import android.util.Log
+import org.json.JSONArray
+import org.json.JSONObject
+import com.google.gson.Gson
 
 /**
  * An activity representing a list of Pings. This activity
@@ -65,15 +68,23 @@ class ItemListActivity : AppCompatActivity() {
 
     private fun fetchLiquorList() {
         val queue = Volley.newRequestQueue(this)
-        val url = "https://www.google.com"
+        val url = "https://api-extern.systembolaget.se/product/v1/product"
 
-        val stringRequest = StringRequest(Request.Method.GET, url,
+        val stringRequest = object: StringRequest(Request.Method.GET, url,
             Response.Listener<String> { response ->
                 // Display the first 500 characters of the response string.
-                Log.d("Sucess", response.substring(0, 500))
                 //textView.text = "Response is: ${response.substring(0, 500)}"
+                var gson = Gson()
+                var products = gson?.fromJson(response, Array<Product.ProductInfo>::class.java)
+                Log.d("Sucess", products.count().toString())
             },
-            Response.ErrorListener { print("error") })
+            Response.ErrorListener { print("error") }) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Ocp-Apim-Subscription-Key"] = "ee8a7296ea2e403d90fb609c664c4f53"
+                return headers
+            }
+        }
 
 // Add the request to the RequestQueue.
         queue.add(stringRequest)
@@ -137,4 +148,15 @@ class ItemListActivity : AppCompatActivity() {
             val contentView: TextView = view.content
         }
     }
+}
+
+class Product {
+    data class ProductInfo(
+        val ProductId: String
+//        val productNameBold: String,
+//        val category: String,
+//        val isCompletelyOutOfStock: Boolean,
+//        val alcoholPercentage: Int,
+//        var price: Int
+    )
 }
