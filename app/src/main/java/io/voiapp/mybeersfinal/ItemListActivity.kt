@@ -73,10 +73,13 @@ class ItemListActivity : AppCompatActivity() {
         val stringRequest = object: StringRequest(Request.Method.GET, url,
             Response.Listener<String> { response ->
                 // Display the first 500 characters of the response string.
+                Log.d("Sucess", response)
+
                 //textView.text = "Response is: ${response.substring(0, 500)}"
                 var gson = Gson()
                 var products = gson?.fromJson(response, Array<ProductInfo>::class.java)
                 Log.d("Sucess", products.count().toString())
+
             },
             Response.ErrorListener { print("error") }) {
             override fun getHeaders(): MutableMap<String, String> {
@@ -150,7 +153,6 @@ class ItemListActivity : AppCompatActivity() {
     }
 }
 
-
     data class ProductInfo(
         val ProductId: String? = null
 //        val productNameBold: String,
@@ -159,3 +161,4 @@ class ItemListActivity : AppCompatActivity() {
 //        val alcoholPercentage: Int,
 //        var price: Int
     )
+
