@@ -75,7 +75,7 @@ class ItemListActivity : AppCompatActivity() {
                 // Display the first 500 characters of the response string.
                 //textView.text = "Response is: ${response.substring(0, 500)}"
                 var gson = Gson()
-                var products = gson?.fromJson(response, Array<Product.ProductInfo>::class.java)
+                var products = gson?.fromJson(response, Array<ProductInfo>::class.java)
                 Log.d("Sucess", products.count().toString())
             },
             Response.ErrorListener { print("error") }) {
@@ -150,13 +150,12 @@ class ItemListActivity : AppCompatActivity() {
     }
 }
 
-class Product {
+
     data class ProductInfo(
-        val ProductId: String
+        val ProductId: String? = null
 //        val productNameBold: String,
 //        val category: String,
 //        val isCompletelyOutOfStock: Boolean,
 //        val alcoholPercentage: Int,
 //        var price: Int
     )
-}
