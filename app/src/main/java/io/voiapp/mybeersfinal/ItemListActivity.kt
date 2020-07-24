@@ -14,6 +14,13 @@ import io.voiapp.mybeersfinal.dummy.DummyContent
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.item_list.*
+import com.android.volley.toolbox.Volley
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
+import android.util.Log
 
 /**
  * An activity representing a list of Pings. This activity
@@ -51,8 +58,27 @@ class ItemListActivity : AppCompatActivity() {
             twoPane = true
         }
 
+        print("initial point")
         setupRecyclerView(item_list)
+        fetchLiquorList()
     }
+
+    private fun fetchLiquorList() {
+        val queue = Volley.newRequestQueue(this)
+        val url = "https://www.google.com"
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            Response.Listener<String> { response ->
+                // Display the first 500 characters of the response string.
+                Log.d("Sucess", response.substring(0, 500))
+                //textView.text = "Response is: ${response.substring(0, 500)}"
+            },
+            Response.ErrorListener { print("error") })
+
+// Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
