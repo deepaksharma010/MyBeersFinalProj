@@ -48,10 +48,6 @@ class ItemListActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         toolbar.title = title
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
 
         if (item_detail_container != null) {
             // The detail container view will be present only in the
@@ -82,10 +78,10 @@ class ItemListActivity : AppCompatActivity() {
             fetchLiquorList()
             onClickListener = View.OnClickListener { v ->
                 val item = v.tag as DummyContent.DummyItem
+                DummyContent.CURRENT_ITEM = item
                 if (twoPane) {
                     val fragment = ItemDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putString(ItemDetailFragment.ARG_ITEM_ID, item.id)
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -94,7 +90,7 @@ class ItemListActivity : AppCompatActivity() {
                             .commit()
                 } else {
                     val intent = Intent(v.context, ItemDetailActivity::class.java).apply {
-                        putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id)
+
                     }
                     v.context.startActivity(intent)
                 }
@@ -113,7 +109,7 @@ class ItemListActivity : AppCompatActivity() {
                     //textView.text = "Response is: ${response.substring(0, 500)}"
                     var gson = Gson()
                     var products = gson?.fromJson(response, Array<ProductInfo>::class.java)
-                    values = products.map { product -> DummyContent.DummyItem(product.ProductId, product.ProductNameBold, "details") }
+                    values = products.map { product -> DummyContent.DummyItem(product.ProductId, product.ProductNameBold, product) }
                     Log.d("Sucess", products.count().toString())
                     notifyDataSetChanged()
 
@@ -156,10 +152,10 @@ class ItemListActivity : AppCompatActivity() {
 
     data class ProductInfo(
         val ProductId: String,
-        val ProductNameBold: String
-//        val category: String,
+        val ProductNameBold: String,
+        val Category: String,
 //        val isCompletelyOutOfStock: Boolean,
-        //val AlcoholPercentage: Int
-//        var price: Int
+        var AlcoholPercentage: Float,
+        var Price: Float
     )
 

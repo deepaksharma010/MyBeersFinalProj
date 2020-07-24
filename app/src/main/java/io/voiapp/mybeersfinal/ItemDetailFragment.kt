@@ -25,15 +25,9 @@ class ItemDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.let {
-            if (it.containsKey(ARG_ITEM_ID)) {
-                // Load the dummy content specified by the fragment
-                // arguments. In a real-world scenario, use a Loader
-                // to load content from a content provider.
-                item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
-                activity?.toolbar_layout?.title = item?.content
-            }
-        }
+               // item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
+        item = DummyContent.CURRENT_ITEM
+        activity?.toolbar_layout?.title = item?.content
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +36,7 @@ class ItemDetailFragment : Fragment() {
 
         // Show the dummy content as text in a TextView.
         item?.let {
-            rootView.item_detail.text = it.details
+            rootView.item_detail.text = "Alcohol: " + it.product.AlcoholPercentage + "%\nprice: " + it.product.Price + "SEK\ncategory: " + it.product.Category
         }
 
         return rootView
@@ -53,6 +47,6 @@ class ItemDetailFragment : Fragment() {
          * The fragment argument representing the item ID that this fragment
          * represents.
          */
-        const val ARG_ITEM_ID = "item_id"
+        const val ARG_ITEM = "item"
     }
 }
