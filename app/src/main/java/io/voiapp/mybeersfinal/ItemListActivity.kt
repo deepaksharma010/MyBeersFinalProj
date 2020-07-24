@@ -63,34 +63,7 @@ class ItemListActivity : AppCompatActivity() {
 
         print("initial point")
         setupRecyclerView(item_list)
-        fetchLiquorList()
-    }
 
-    private fun fetchLiquorList() {
-        val queue = Volley.newRequestQueue(this)
-        val url = "https://api-extern.systembolaget.se/product/v1/product"
-
-        val stringRequest = object: StringRequest(Request.Method.GET, url,
-            Response.Listener<String> { response ->
-                // Display the first 500 characters of the response string.
-                Log.d("Sucess", response)
-
-                //textView.text = "Response is: ${response.substring(0, 500)}"
-                var gson = Gson()
-                var products = gson?.fromJson(response, Array<ProductInfo>::class.java)
-                Log.d("Sucess", products.count().toString())
-
-            },
-            Response.ErrorListener { print("error") }) {
-            override fun getHeaders(): MutableMap<String, String> {
-                val headers = HashMap<String, String>()
-                headers["Ocp-Apim-Subscription-Key"] = "ee8a7296ea2e403d90fb609c664c4f53"
-                return headers
-            }
-        }
-
-// Add the request to the RequestQueue.
-        queue.add(stringRequest)
     }
 
 
@@ -99,13 +72,14 @@ class ItemListActivity : AppCompatActivity() {
     }
 
     class SimpleItemRecyclerViewAdapter(private val parentActivity: ItemListActivity,
-                                        private val values: List<DummyContent.DummyItem>,
+                                        private var values: List<DummyContent.DummyItem>,
                                         private val twoPane: Boolean) :
             RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
 
         private val onClickListener: View.OnClickListener
 
         init {
+            fetchLiquorList()
             onClickListener = View.OnClickListener { v ->
                 val item = v.tag as DummyContent.DummyItem
                 if (twoPane) {
@@ -127,6 +101,33 @@ class ItemListActivity : AppCompatActivity() {
             }
         }
 
+
+        private fun fetchLiquorList() {
+            val queue = Volley.newRequestQueue(parentActivity)
+            val url = "https://api-extern.systembolaget.se/product/v1/product"
+
+            val stringRequest = object: StringRequest(Request.Method.GET, url,
+                Response.Listener<String> { response ->
+                    // Display the first 500 characters of the response string.
+                    Log.d("Sucess", response)
+                    //textView.text = "Response is: ${response.substring(0, 500)}"
+                    var gson = Gson()
+                    var products = gson?.fromJson(response, Array<ProductInfo>::class.java)
+                    values = products.map { product -> DummyContent.DummyItem(product.ProductId, product.ProductNameBold, "details") }
+                    Log.d("Sucess", products.count().toString())
+                    notifyDataSetChanged()
+
+                },
+                Response.ErrorListener { print("error") }) {
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers["Ocp-Apim-Subscription-Key"] = "ee8a7296ea2e403d90fb609c664c4f53"
+                    return headers
+                }
+            }
+
+            queue.add(stringRequest)
+        }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_list_content, parent, false)
@@ -154,11 +155,11 @@ class ItemListActivity : AppCompatActivity() {
 }
 
     data class ProductInfo(
-        val ProductId: String? = null
-//        val productNameBold: String,
+        val ProductId: String,
+        val ProductNameBold: String
 //        val category: String,
 //        val isCompletelyOutOfStock: Boolean,
-//        val alcoholPercentage: Int,
+        //val AlcoholPercentage: Int
 //        var price: Int
     )
 
